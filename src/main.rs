@@ -1,8 +1,10 @@
 use physim::*;
 
 fn main() {
-    greet();
-    let mut p = Point::new();
-    p.x(2.3).y(7.3).z(-1.4);
-    println!("{:?}", p);
+    let mut timer = Timer::new();
+    let mut obj = Mover::new();
+    obj.set_velocity(100.0, 100.0, 0.0);
+    obj.set_accelaration(-1.0, -0.1, 0.0);
+    timer.register_mover(obj);
+    timer.run();
 }

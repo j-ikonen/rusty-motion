@@ -84,36 +84,70 @@ impl Mover {
     pub fn set_weight(&mut self, w: f64) {
         self.weight = w;
     }
+    pub fn print_location(&self) {
+        println!("{:?}", self.location);
+    }
 }
 
 pub trait Movable {
-    fn tick(&mut self, td: f64);
+    fn tick(&mut self, dt: f64);
 }
 
 impl Movable for Mover {
-    fn tick(&mut self, td: f64) {
+    fn tick(&mut self, dt: f64) {
         self.velocity = 
             self.location + 
-            self.velocity * td + 
-            self.acceleration * td.powi(2) * 0.5;
-        self.location = self.acceleration * td + self.velocity;
+            self.velocity * dt + 
+            self.acceleration * dt.powi(2) * 0.5;
+        self.location = self.acceleration * dt + self.velocity;
         
     }
 }
 
 pub struct Timer {
     min_duration: Duration,
+    start: Instant,
     last_instant: Instant,
+    movers: Vec<Mover>,
+    print_location: bool,
+    print_dt: bool,
 }
 
 impl Timer {
     pub fn new() -> Timer {
         Timer {
             min_duration: Duration::from_millis(7),
+            start: Instant::now(),
             last_instant: Instant::now(),
+            movers: Vec::new(),
+            print_location: true,
+            print_dt: true,
         }
     }
-    pub fn start(&mut self) {
-        
+
+    pub fn register_mover(&mut self, mov: Mover) {
+        self.movers.push(mov);
+    }
+
+    pub fn run(&mut self) {
+        self.last_instant = Instant::now();
+        self.start = self.last_instant;
+        loop {
+            let ins = Instant::now();
+            let dur = ins - self.last_instant;
+            if dur >= self.min_duration {
+                self.last_instant = ins;
+                let dt = dur.as_secs_f64();
+                for mv in self.movers.iter_mut() {
+                    mv.tick(dt);
+                    if self.print_location {
+                        mv.print_location();
+                    }
+                    if self.print_dt {
+                        println!("dt: {:?} s", dt);
+                    }
+                }
+            }
+        }
     }
 }
