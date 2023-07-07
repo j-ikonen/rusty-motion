@@ -160,11 +160,10 @@ pub trait Movable {
 impl Movable for Mover {
     fn tick(&mut self, dt: f64) {
         self.acceleration = self.sumf / self.weight;
-        self.velocity = 
-            self.location + 
-            self.velocity * dt + 
-            self.acceleration * dt.powi(2) * 0.5;
-        self.location = self.acceleration * dt + self.velocity;
+        self.location = self.location + 
+                        self.velocity * dt + 
+                        self.acceleration * dt.powi(2) * 0.5;
+        self.velocity = self.acceleration * dt + self.velocity;
         
     }
 }
